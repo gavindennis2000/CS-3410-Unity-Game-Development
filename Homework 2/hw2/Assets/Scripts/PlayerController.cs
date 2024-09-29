@@ -5,6 +5,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
@@ -21,12 +22,11 @@ public class PlayerController : MonoBehaviour
     public bool gameOver;
     public bool special;  // controls powerup with special pickup
     private float timer;
-    private float maxTime = 6.0f;
+    private float maxTime = 60.0f;
 
     // Start is called before the first frame update
     void Start()
     {
-
         rb = GetComponent<Rigidbody>();
         count = 0;
 
@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
         // initialize a timer
         timer = 0.0f;
         timerText.text = "";
-        // restart.gameObject.SetActive(false);
+        restart.gameObject.SetActive(false);
 
         // set win text to a null string
         winText.text = "";
@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
         else if (timer >= maxTime) {
             winText.text = "Game Over!";
             gameOver = true;
-            // restart.gameObject.SetActive(true);
+            restart.gameObject.SetActive(true);
         }
 
     }
@@ -78,6 +78,7 @@ public class PlayerController : MonoBehaviour
             if (count >= 8) { 
                 winText.text = "You Win!";
                 gameOver = true;
+                restart.gameObject.SetActive(true);
             }
         }
         // handle collision with special pickup objects
@@ -93,6 +94,11 @@ public class PlayerController : MonoBehaviour
             }
         }
         
+    }
+
+    public void pressRestart() {
+        // restarts the game after game over or win
+        SceneManager.LoadScene("SampleScene");
     }
 }
 
