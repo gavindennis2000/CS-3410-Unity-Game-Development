@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     public Component cam;
     public float speed;
-    private int count;
+    public int count;
     public Text timerText;
     public Text winText;
     public Text specialText;
