@@ -7,6 +7,8 @@ TagManager:
   - Cannonball
   - Wall
   - Floor
+  - Teapot
+  - Special
   layers:
   - Default
   - TransparentFX

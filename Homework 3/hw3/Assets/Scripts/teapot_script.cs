@@ -6,17 +6,15 @@ using UnityEngine.UI;
 
 public class teapot_script : MonoBehaviour
 {
-    public PlayerController playerScript;
+    public PlayerScript playerScript;
     private Rigidbody rb;
     private bool shot = false;
-    private bool hitWall = false;
-    UnityEngine.Vector3 fakeGravity = new UnityEngine.Vector3(0, -20, 0);
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-
+        rb.useGravity = false;
         // set the initial rotation angle to random
         var rand = Random.Range(0, 359);
         transform.Rotate(new UnityEngine.Vector3(0, rand, 0));
@@ -30,25 +28,33 @@ public class teapot_script : MonoBehaviour
         if (!shot) { 
             transform.Rotate(new UnityEngine.Vector3(0, 60, 0) * Time.deltaTime); 
         }
-        else if (hitWall) {
-            rb.velocity += fakeGravity * Time.deltaTime;
-        }
     }
 
     private void OnTriggerEnter(Collider other) {
         // handle collision with cannonball
-        if (other.gameObject.CompareTag("Cannonball")) {
+        if (this.gameObject.CompareTag("Special") && other.gameObject.CompareTag("Cannonball")) {
+            playerScript.ActivateSpecial();
+            shot = true;
+            rb.useGravity = true;
+        }
+        else if (
+            other.gameObject.CompareTag("Cannonball") || 
+            (other.gameObject.CompareTag("Teapot") && this.gameObject.CompareTag("Teapot"))
+        ) {
             if (!shot) {
+                playerScript.IncrementScore();
                 shot = true;
-                playerScript.count++;
+                rb.useGravity = true;
             }
         }
         else if (other.gameObject.CompareTag("Wall")) {
-            if (!hitWall) {
-                hitWall = true;
-            }
+            rb.useGravity = true;
         }
         else if (other.gameObject.CompareTag("Floor")) {
+            if (!shot) {  // make sure the player gets a point if there is a previous issue with collision
+                playerScript.IncrementScore();
+                shot = true;
+            }
             Destroy(this.gameObject);
         }
     }

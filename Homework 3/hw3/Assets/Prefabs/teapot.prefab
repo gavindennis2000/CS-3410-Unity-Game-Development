@@ -64,9 +64,17 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -7635826562936255635, guid: 2e1d6f67b06597840bb88c09a3801fa6, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1208dfc05d7fa2848af2646f2aa14c5c, type: 2}
     - target: {fileID: 919132149155446097, guid: 2e1d6f67b06597840bb88c09a3801fa6, type: 3}
       propertyPath: m_Name
       value: teapot
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2e1d6f67b06597840bb88c09a3801fa6, type: 3}
+      propertyPath: m_TagString
+      value: Teapot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -99,6 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2657e9a3df48b3d4e9b047ddbd9333cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerScript: {fileID: 0}
 --- !u!54 &-3803067621500235806
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -66,8 +66,8 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\player_script.cs" />
     <Compile Include="Assets\Scripts\shooter.cs" />
+    <Compile Include="Assets\Scripts\cannonball_script.cs" />
     <Compile Include="Assets\Scripts\teapot_script.cs" />
-    <Compile Include="Assets\Scripts\bullet_script.cs" />
     <Compile Include="Assets\Scripts\camera_script.cs" />
   </ItemGroup>
   <ItemGroup>
