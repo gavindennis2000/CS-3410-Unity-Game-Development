@@ -3,8 +3,10 @@
     2024/12/10
 
     Player Script
-    handles player head movement, collision checking, and 
-    tail instantiation
+    
+    handles player movement, collision checking,
+    tail instantiation, apple movement, score,
+    and game over features
 */
 
 using System;
@@ -12,7 +14,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -141,6 +142,9 @@ public class PlayerScript : MonoBehaviour
 
         // find a new position where there isn't snake body
         do {
+            // reset colliding flag
+            colliding = false;
+
             // random x and z positions
             posX = -95 + UnityEngine.Random.Range(0, 19) * 10; 
             posZ = -95 + UnityEngine.Random.Range(0, 19) * 10; 
@@ -162,7 +166,7 @@ public class PlayerScript : MonoBehaviour
                     Math.Pow(newPosition.z - head.z, 2)
                 )
             );
-            Debug.Log(distance);
+            Debug.Log("Distance between head and new apple position: " + distance);
 
         } while (colliding || distance < 50);
 
@@ -241,17 +245,19 @@ public class PlayerScript : MonoBehaviour
     private void GameOver() {
         // handles game over: stops player movement, and enables retry button
 
+        if (gameOver) { return; }
+
         // enable the text/buttons
         gameOver = true;
         gameOverText.gameObject.SetActive(true);
         retryButton.gameObject.SetActive(true);
 
         // play the sound effect
-        zap.Play();  
+        zap.Play(); 
     }
 
     public void ClickRetry() {
-        // on click handler for retry button
+        // onclick handler for retry button
 
         // restart the game
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
