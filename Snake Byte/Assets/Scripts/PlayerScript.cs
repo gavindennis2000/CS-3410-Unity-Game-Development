@@ -10,6 +10,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEditor.SearchService;
 using UnityEngine;
@@ -23,9 +24,10 @@ public class PlayerScript : MonoBehaviour
     string direction;  // used to dictate direction in which player will move
     Boolean canChangeDirection;  // used to let the player change direction between movements
 
-    // prefab lists
+    // prefabs and prefab lists
     public GameObject cube;  // cube prefab/snake body
     public GameObject wall;  // the walls of the arena. Used to check for collisions
+    public GameObject apple;  // apples that make the snake grow score increase
     List<Transform> snakes;  // list of snake body parts
     List<Transform> walls;  // list of all wall objects
 
@@ -82,6 +84,9 @@ public class PlayerScript : MonoBehaviour
             pos = new Vector3(105f, 5f, i);
             walls.Add(Instantiate(wall.transform, pos, rotation));
         }
+
+        // move the apple to a random spot
+        MoveApple();
     }
 
     void Update()
@@ -113,10 +118,8 @@ public class PlayerScript : MonoBehaviour
             timer = 0f;  
 
             // move all parts of the snake
-            if (!gameOver) {
-                MovePlayer();
-                canChangeDirection = true;
-            }
+            MovePlayer();
+            canChangeDirection = true;
         
         }
 
@@ -124,15 +127,51 @@ public class PlayerScript : MonoBehaviour
         timer += Time.deltaTime;  
     }
 
+    private void MoveApple() {
+        // creates an apple at a random location; cannot be on the same
+        // row or column as the player head
+
+        float posX, posZ;
+        Boolean colliding = false;
+        Vector3 newPosition;
+
+        // find a new position where there isn't snake body
+        do {
+            // random x and z positions
+            posX = -95 + UnityEngine.Random.Range(0, 19) * 10; 
+            posZ = -95 + UnityEngine.Random.Range(0, 19) * 10; 
+
+            // position vector
+            newPosition = new Vector3(posX, 5, posZ);
+
+            foreach (var snake in snakes) {
+                if (newPosition == snake.position) {
+                    colliding = true; }
+            }
+        } while (colliding);
+
+        // move the apple
+        apple.transform.position = newPosition;
+    }
+
+    private void EatApple() {
+        // handles apple consumption
+
+        score++;  // increment score
+        MoveApple();  // move apple
+
+        // create 3 new snake parts
+        var tailPosition = snakes.Last().position;
+        var rotation = transform.rotation;
+        for (int i = 0; i < 3; i++) { 
+            snakes.Add(Instantiate(cube.transform, tailPosition, rotation)); }
+    }
+
     private void MovePlayer() {
         // moves all player objects including head and every list transform
 
-        // set new position for each snake body part, starting with the tail
-        for (int i = snakes.Count-1; i > 0 ; i--) {
-            snakes[i].transform.position = snakes[i-1].transform.position;
-        }
-
-        // set new position for the snake head
+        // find new position for the snake head
+        // (the body will move first but we need to check for collisions)
         var newPosition = transform.position;
         switch (direction) {
             case "up":
@@ -162,9 +201,23 @@ public class PlayerScript : MonoBehaviour
                 GameOver(); }
         }
 
+        // exit the function if there's a game over
+        if (gameOver) { 
+            return;
+        }
+
+        // set new position for each snake body part, starting with the tail
+        for (int i = snakes.Count-1; i > 0 ; i--) {
+            snakes[i].transform.position = snakes[i-1].transform.position;
+        }
+
         // set new position
         transform.position = newPosition;
 
+        // check for apple collision
+        if (transform.position == apple.transform.position) {
+            EatApple();
+        }
         
     }
 
