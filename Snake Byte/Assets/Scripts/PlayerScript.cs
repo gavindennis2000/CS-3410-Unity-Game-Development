@@ -31,6 +31,9 @@ public class PlayerScript : MonoBehaviour
     List<Transform> snakes;  // list of snake body parts
     List<Transform> walls;  // list of all wall objects
 
+    // sound effects
+    public AudioSource biteApple, zap;
+
     // game functionality
     Boolean gameOver;  // set to true when player hits a wall or body part
     public Text gameOverText;
@@ -128,11 +131,12 @@ public class PlayerScript : MonoBehaviour
     }
 
     private void MoveApple() {
-        // creates an apple at a random location; cannot be on the same
-        // row or column as the player head
+        // creates an apple at a random location; cannot be the same location
+        // as any part of the snake; must be 5 spaces away from the head
 
         float posX, posZ;
-        Boolean colliding = false;
+        double distance;  // distance between moved apple and snake head
+        Boolean colliding = false;  // flags if moved apple is touching snake
         Vector3 newPosition;
 
         // find a new position where there isn't snake body
@@ -144,11 +148,23 @@ public class PlayerScript : MonoBehaviour
             // position vector
             newPosition = new Vector3(posX, 5, posZ);
 
+            // check collision with each body part
             foreach (var snake in snakes) {
                 if (newPosition == snake.position) {
                     colliding = true; }
             }
-        } while (colliding);
+
+            // get the distance from the head
+            var head = snakes.First().position;
+            distance = ( 
+                Math.Sqrt(
+                    Math.Pow(newPosition.x - head.x, 2) + 
+                    Math.Pow(newPosition.z - head.z, 2)
+                )
+            );
+            Debug.Log(distance);
+
+        } while (colliding || distance < 50);
 
         // move the apple
         apple.transform.position = newPosition;
@@ -158,6 +174,7 @@ public class PlayerScript : MonoBehaviour
         // handles apple consumption
 
         score++;  // increment score
+        biteApple.Play();  // play the sound effect
         MoveApple();  // move apple
 
         // create 3 new snake parts
@@ -224,10 +241,13 @@ public class PlayerScript : MonoBehaviour
     private void GameOver() {
         // handles game over: stops player movement, and enables retry button
 
+        // enable the text/buttons
         gameOver = true;
         gameOverText.gameObject.SetActive(true);
         retryButton.gameObject.SetActive(true);
 
+        // play the sound effect
+        zap.Play();  
     }
 
     public void ClickRetry() {
